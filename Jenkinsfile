@@ -19,7 +19,7 @@ pipeline{
             agent any
             when {expression {"${env.BRANCH_NAME}"== "develop"}}
             steps{
-               sh " git branch: 'master',url:'https://github.com/abhaykst/angular-demo.git'" 
+               git branch: 'master',url:'https://github.com/abhaykst/angular-demo.git'
             } 
         }
         stage('install node modules'){
