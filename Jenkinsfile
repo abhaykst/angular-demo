@@ -8,4 +8,10 @@ node {
   stage('build'){
     sh "npm run build"
   }
+  stage('artifacts to s3'){
+    withCredentials([<object of type com.cloudbees.jenkins.plugins.awscredentials.AmazonWebServicesCredentialsBinding>]) {      
+      sh "aws s3 ls"
+      sh "aws s3 cp ./dist/ --recursive s3://abhaybucket"
+    }
+  }
 }
