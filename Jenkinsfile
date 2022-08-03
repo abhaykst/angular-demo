@@ -5,24 +5,60 @@ pipeline{
             agent any
             when {expression {"${env.BRANCH_NAME}"== "develop"}}
             steps{
-                sleep 70
+                sleep 10
             }
         }
-        stage("Starting Test") {
+        stage("Starting production") {
             agent any
             when {expression {"${env.BRANCH_NAME}"== "master"}}
             steps{
-                sleep 55
+                sleep 20
             }
         }   
-        stage('checkout SCM'){
-            git branch: 'master',url:'https://github.com/abhaykst/angular-demo.git'  
+        stage('checkout SCM develop branch'){
+            agent any
+            when {expression {"${env.BRANCH_NAME}"== "develop"}}
+            steps{
+               git branch: 'develop',url:'https://github.com/abhaykst/angular-demo.git'
+            } 
         }
-        stage('install node modules'){
-            sh "npm install"
+      
+       stage('checkout SCM master branch'){
+            agent any
+            when {expression {"${env.BRANCH_NAME}"== "master"}}
+            steps{
+               git branch: 'master',url:'https://github.com/abhaykst/angular-demo.git'
+            } 
         }
-        stage('build'){
-            sh "npm run build"
+        stage('install node modules development'){
+            agent any
+            when {expression {"${env.BRANCH_NAME}"== "develop"}}
+            steps{
+                sh "npm install"
+            }
+        }
+      
+      stage('install node modules for development'){
+            agent any
+            when {expression {"${env.BRANCH_NAME}"== "master"}}
+            steps{
+                sh "npm install"
+            }
+        }
+        stage('build... devepment envionment'){
+            agent any
+            when {expression {"${env.BRANCH_NAME}"== "develop"}}
+            steps{
+                sh "npm run build"
+            }
+        }
+      
+      stage('build... production envionment'){
+            agent any
+            when {expression {"${env.BRANCH_NAME}"== "master"}}
+            steps{
+                sh "npm run build"
+            }
         }
       
         stage('artifacts to s3 dev'){
@@ -35,7 +71,7 @@ pipeline{
                 }
             }
         }
-        stage('artifacts to s3 master'){
+        stage('artifacts to s3 production'){
             when {expression {return env.BRANCH_NAME == 'master'}}
             agent any
             steps {
@@ -45,5 +81,6 @@ pipeline{
                 }
             }
         }
+        
     }   
 }
